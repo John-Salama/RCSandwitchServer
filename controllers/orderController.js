@@ -1,10 +1,10 @@
-const Order = require('../models/orderModel');
-const OrderItem = require('../models/orderItemModel');
-const User = require('../models/userModel');
-const Sandwich = require('../models/sandwichModel');
-const catchAsync = require('../utils/catchAsync');
-const AppError = require('../utils/AppError');
-const bcrypt = require('bcrypt');
+const Order = require("../models/orderModel");
+const OrderItem = require("../models/orderItemModel");
+const User = require("../models/userModel");
+const Sandwich = require("../models/sandwichModel");
+const catchAsync = require("../utils/catchAsync");
+const AppError = require("../utils/AppError");
+const bcrypt = require("bcrypt");
 
 // Get all orders (admin only)
 exports.getAllOrders = catchAsync(async (req, res, next) => {
@@ -30,8 +30,8 @@ exports.getAllOrders = catchAsync(async (req, res, next) => {
 
   const orders = await Order.find(dateQuery)
     .populate({
-      path: 'userId',
-      select: 'name',
+      path: "userId",
+      select: "name",
     })
     .sort({ date: 1 });
 
@@ -44,8 +44,8 @@ exports.getAllOrders = catchAsync(async (req, res, next) => {
     },
     date: order.date,
     items: order.items.map((item) => {
-      // Check if item.sandwich exists before accessing its properties
-      if (!item.sandwich) {
+      // Check if item.sandwichId exists before accessing its properties
+      if (!item.sandwichId) {
         return {
           id: item._id,
           quantity: item.quantity,
@@ -59,10 +59,10 @@ exports.getAllOrders = catchAsync(async (req, res, next) => {
         quantity: item.quantity,
         price: item.price,
         sandwich: {
-          id: item.sandwich._id,
-          name: item.sandwich.name,
-          price: item.sandwich.price,
-          description: item.sandwich.description,
+          id: item.sandwichId._id,
+          name: item.sandwichId.name,
+          price: item.sandwichId.price,
+          description: item.sandwichId.description,
         },
       };
     }),
@@ -78,7 +78,7 @@ exports.createOrder = catchAsync(async (req, res, next) => {
   // Validate required fields
   if (!userName || !items || !Array.isArray(items) || items.length === 0) {
     return next(
-      new AppError('Name and at least one sandwich are required', 400)
+      new AppError("Name and at least one sandwich are required", 400)
     );
   }
 
@@ -87,7 +87,7 @@ exports.createOrder = catchAsync(async (req, res, next) => {
   const sandwiches = await Sandwich.find({ _id: { $in: sandwichIds } });
 
   if (sandwiches.length !== new Set(sandwichIds).size) {
-    return next(new AppError('One or more sandwiches do not exist', 400));
+    return next(new AppError("One or more sandwiches do not exist", 400));
   }
 
   // Find or create user by name
@@ -97,9 +97,9 @@ exports.createOrder = catchAsync(async (req, res, next) => {
     // Generate a random email and hashed password
     const randomEmail = `${userName.replace(
       /\s+/g,
-      ''
+      ""
     )}_${Date.now()}@example.com`;
-    const hashedPassword = await bcrypt.hash('password123', 10);
+    const hashedPassword = await bcrypt.hash("password123", 10);
 
     user = await User.create({
       name: userName,
@@ -131,8 +131,8 @@ exports.createOrder = catchAsync(async (req, res, next) => {
 
   // Populate order with user and items
   const populatedOrder = await Order.findById(order._id).populate({
-    path: 'userId',
-    select: 'name',
+    path: "userId",
+    select: "name",
   });
 
   // Transform order to match expected format
