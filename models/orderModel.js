@@ -40,7 +40,7 @@ orderSchema.pre(/^find/, function (next) {
   this.populate({
     path: 'items',
     populate: {
-      path: 'sandwich',
+      path: 'sandwichId',
       select: 'name description price',
     },
   });

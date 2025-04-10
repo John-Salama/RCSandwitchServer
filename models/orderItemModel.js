@@ -36,7 +36,7 @@ orderItemSchema.index({ sandwichId: 1 });
 // Populate sandwich when querying order items
 orderItemSchema.pre(/^find/, function (next) {
   this.populate({
-    path: 'sandwich',
+    path: 'sandwichId',
     select: 'name description price',
   });
   next();
