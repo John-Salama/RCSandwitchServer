@@ -43,17 +43,29 @@ exports.getAllOrders = catchAsync(async (req, res, next) => {
       name: order.userId.name,
     },
     date: order.date,
-    items: order.items.map((item) => ({
-      id: item._id,
-      quantity: item.quantity,
-      price: item.price,
-      sandwich: {
-        id: item.sandwich._id,
-        name: item.sandwich.name,
-        price: item.sandwich.price,
-        description: item.sandwich.description,
-      },
-    })),
+    items: order.items.map((item) => {
+      // Check if item.sandwich exists before accessing its properties
+      if (!item.sandwich) {
+        return {
+          id: item._id,
+          quantity: item.quantity,
+          price: item.price,
+          sandwich: null,
+        };
+      }
+
+      return {
+        id: item._id,
+        quantity: item.quantity,
+        price: item.price,
+        sandwich: {
+          id: item.sandwich._id,
+          name: item.sandwich.name,
+          price: item.sandwich.price,
+          description: item.sandwich.description,
+        },
+      };
+    }),
   }));
 
   res.status(200).json(formattedOrders);
