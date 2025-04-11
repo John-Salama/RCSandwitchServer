@@ -7,6 +7,13 @@ const router = express.Router();
 // Public order creation endpoint
 router.post('/', orderController.createOrder);
 
+// User orders endpoint with authentication
+router.get(
+  '/user/:userId',
+  authController.protect,
+  orderController.getUserOrders
+);
+
 // Protected admin endpoints
 router.get(
   '/admin',
